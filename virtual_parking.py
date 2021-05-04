@@ -17,13 +17,14 @@ class ParkingLot:
         self.slot_heap = slot_heap if slot_heap else list()
 
     """
+
     def __init__(self, slots=None, total_slots=None, avail_slot=None, reg_slot_dict=None,
                  age_slot_dict=None, slot_heap=None):
         self.slots = slots if slots else list()
         self.total_slots = total_slots
         self.avail_slot = avail_slot
         self.reg_slot_dict = reg_slot_dict if reg_slot_dict else dict()
-        self.age_slot_dict = age_slot_dict if age_slot_dict else defaultdict(list)
+        self.age_slot_dict = defaultdict(list, age_slot_dict) if age_slot_dict else defaultdict(list)
         self.slot_heap = slot_heap if slot_heap else list()
         heapify(self.slot_heap)
 
@@ -63,14 +64,17 @@ class ParkingProcessor:
     ParkingProcessor is factory which process the commands on the parkinglot
 
     """
+
     def __init__(self, parkinglot_obj):
         self.parkinglot_obj = parkinglot_obj
 
     def park_vehicle(self, command_toks):
         # validating command and executing it
         # Command-  "Park KA-01-HH-1234 driver_age 21"
-        reg_num = re.match(r'[A-Z]{2}-\d{2}-[A-Z]{2}-\d{4}', command_toks[1]).group()
-        age = re.match(r'\d+', command_toks[3]).group()
+        reg_num = re.match(r'[A-Z]{2}-\d{2}-[A-Z]{2}-\d{4}', command_toks[1])
+        reg_num = reg_num.group() if reg_num else None
+        age = re.match(r'\d+', command_toks[3])
+        age = age.group() if age else None
         if len(command_toks) == 4 and reg_num and command_toks[2] == "driver_age" and age:
             reg_num = reg_num
             age = int(age)
@@ -91,7 +95,8 @@ class ParkingProcessor:
     def exit_vehicle(self, command_toks):
         # validating command and executing it
         """ Command: Leave 2"""
-        slot = re.match(r'\d+', command_toks[1]).group()
+        slot = re.match(r'\d+', command_toks[1])
+        slot = slot.group() if slot else None
         if len(command_toks) == 2 and slot:
             vehicle_data = self.parkinglot_obj.slots[int(slot) - 1]
             if vehicle_data:
@@ -112,7 +117,8 @@ class ParkingProcessor:
 
     def get_slots_by_age(self, command_toks):
         """ Command: Slot_numbers_for_driver_of_age 21 """
-        age = re.match(r'\d+', command_toks[1]).group()
+        age = re.match(r'\d+', command_toks[1])
+        age = age.group() if age else None
         if len(command_toks) == 2 and age:
             result = self.parkinglot_obj.age_slot_dict[int(age)]
             if result:
@@ -125,7 +131,8 @@ class ParkingProcessor:
     def get_slot_by_num(self, command_toks):
         # validating command and executing it
         """ Command: Slot_number_for_car_with_number PB-01-HH-1234 """
-        reg_num = re.match(r'[A-Z]{2}-\d{2}-[A-Z]{2}-\d{4}', command_toks[1]).group()
+        reg_num = re.match(r'[A-Z]{2}-\d{2}-[A-Z]{2}-\d{4}', command_toks[1])
+        reg_num = reg_num.group() if reg_num else None
         if len(command_toks) == 2 and reg_num:
             result = self.parkinglot_obj.reg_slot_dict.get(reg_num, None)
             if result:
@@ -155,6 +162,7 @@ class CommandProcessor:
     CommandProcessor process all the commands in the file and routes each command based on its type.
 
     """
+
     def __init__(self, file_obj, process_parking_obj):
         self.file_obj = file_obj
         self.process_parking_obj = process_parking_obj
@@ -197,6 +205,7 @@ class FileUtility:
     """
     Utility class to load the input file
     """
+
     def __init__(self):
         self.file = None
 
@@ -209,12 +218,11 @@ class FileUtility:
 
 
 if __name__ == '__main__':
-    filename = input("Enter the input file path:\n")
-    # filename = "test_files/inp.txt"
+    # filename = input("Enter the input file path:\n")
+    filename = "test_files/inp2.txt"
     plot = ParkingLot()
     file_obj = FileUtility()
     file_obj.load_file(filename)
     process_prk_obj = ParkingProcessor(plot)
     command_obj = CommandProcessor(file_obj, process_prk_obj)
     command_obj.execute_commands()
-

@@ -129,7 +129,58 @@ class ParkingProcessorTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.plot = ParkingLot()
+        self.plot = DataDump.create_parking_lot_data()
+        self.park_processor_obj = ParkingProcessor(self.plot)
+
+    def test_park_valid(self):
+        """
+         Testing park_vehicle() function with valid inputs and cheking if data is inserted
+        """
+        self.park_processor_obj.park_vehicle("Park TS-08-GH-1645 driver_age 24".split())
+        self.assertEqual(self.plot.slots[3]['reg_num'], "TS-08-GH-1645")
+        self.assertEqual(self.plot.slots[3]['age'], 24)
+        self.assertEqual(self.plot.avail_slot, 4)
+
+    def test_park_invalid(self):
+        """
+             Testing park_vehicle() function with invalid inputs - Wrong registration number
+        """
+        self.park_processor_obj.park_vehicle("Park T-08-GH-1645 driver_age 24".split())
+        self.assertEqual(self.plot.avail_slot, 3)
+
+    def test_exit_vehicle_valid(self):
+        """
+             Testing exit_vehicle() function with valid inputs - by removing car from occupied slot
+        """
+        self.park_processor_obj.exit_vehicle("Leave 2".split())
+        self.assertEqual(self.plot.slots[1], None)
+        self.assertEqual(self.plot.avail_slot, 3)
+        self.assertEqual(self.plot.slot_heap[0], 1)
+
+
+    def test_exit_vehicle_invalid(self):
+        """
+             Testing exit_vehicle() function with invalid inputs - by removing car from empty slot
+        """
+        self.park_processor_obj.exit_vehicle("Leave 2".split())
+        self.park_processor_obj.exit_vehicle("Leave 2".split())
+        self.assertEqual(self.plot.slots[1], None)
+        self.assertEqual(self.plot.avail_slot, 3)
+        self.assertEqual(self.plot.slot_heap[0], 1)
+
+
+class DataDump:
+    @staticmethod
+    def create_parking_lot_data():
+        plot = ParkingLot(slots=[{'reg_num': 'KA-01-HH-1234', 'age': 21}, {'reg_num': 'PB-01-HH-1234', 'age': 21},
+                                 {'reg_num': 'PB-01-TG-2341', 'age': 40}, None, None, None],
+                          total_slots=6,
+                          avail_slot=3,
+                          slot_heap=[],
+                          reg_slot_dict={'KA-01-HH-1234': 0, 'PB-01-HH-1234': 1, 'PB-01-TG-2341': 2},
+                          age_slot_dict={21: [1, 2], 18: [], 40: [3]}
+                          )
+        return plot
 
 
 if __name__ == '__main__':
