@@ -208,6 +208,9 @@ class ParkingProcessorTest(unittest.TestCase):
 
 
 class DataDump:
+    """
+    This is a Utility class to dump the dummy data in the Parkinglot
+    """
     @staticmethod
     def create_parking_lot_data():
         plot = ParkingLot(slots=[{'reg_num': 'KA-01-HH-1234', 'age': 21}, {'reg_num': 'PB-01-HH-1234', 'age': 21},
