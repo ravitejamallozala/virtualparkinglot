@@ -16,42 +16,49 @@ Input filepath is given as user input when program is run.
 - open terminal, navigate to the project directory.
 
 Command:-
-***sh ubuntu_install.sh
+
+***sh ubuntu_install.sh***
 
 ### For Mac Users:
 - Installations required to run the project can be installed by running the shell script provided.
 - open terminal, navigate to the project directory.
 
 Command:-
-***sh mac_install.sh
+
+***sh mac_install.sh***
 
 
 ### Running the project: (Both Mac and Ubuntu Users)
 - open terminal, navigate to the project directory.
 Command:-
-***sh run.sh
+
+***sh run.sh***
   
 - We can also pass the file name as command line arguments
 for example:
 
 Command:
-  ***sh run.sh test_files/inp.txt
+
+  ***sh run.sh test_files/inp.txt***
 
 - We can also run the program directly using python 
 
 Command:
-  ***python3 virtual_parking.py
+
+  ***python3 virtual_parking.py***
   
 - can also pass filename as command line argument
   
 Command:
-  ***python3 virtual_parking.py
+
+  ***python3 virtual_parking.py***
   
 ### Running the Unittests cases: (Both Mac and Ubuntu Users)
 - open terminal, navigate to the project directory.
 
 Command:-
-***sh run_unittest.sh 
+
+***sh run_unittest.sh*** 
 
 ### Project Code details:
 - it is a python project with no additional packages used.  
