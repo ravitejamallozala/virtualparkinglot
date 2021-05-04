@@ -51,7 +51,7 @@ Command:
   
 Command:
 
-  ***python3 virtual_parking.py***
+  ***python3 virtual_parking.py test_files/inp.txt***
   
 ### Running the Unittests cases: (Both Mac and Ubuntu Users)
 - open terminal, navigate to the project directory.
