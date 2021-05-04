@@ -1,21 +1,25 @@
 import re
 from heapq import heapify, heappush, heappop
 from collections import defaultdict
+import sys
+
+from utils import FileUtility
 
 
 class ParkingLot:
     """
        ParkingLot is a virtual parking lot with n number of parking slots.
        provides utility funtions :
-         create_parkinglot() - to create a parking lot
-         get_emptyslot() - will return the next available empty slot
-        self.slots = slots if slots else list()
-        self.total_slots = total_slots
-        self.avail_slot = avail_slot
-        self.reg_slot_dict = reg_slot_dict if reg_slot_dict else dict()
-        self.age_slot_dict = age_slot_dict if age_slot_dict else defaultdict(list)
-        self.slot_heap = slot_heap if slot_heap else list()
-
+         create_parkinglot() - this function to create a virtual parking lot with 'n' slots.
+         get_emptyslot() - this function will return the next best available parking slot.
+       Usage:
+         slots:   intialises as empty list to store the vehicle info when car is parked
+         total_slots: to maintain the maximum number of slots available in the parking lot
+         avail_slot: to maintain the available parking slot number when we are first filling the parking lot
+         reg_slot_dict: this dict is used to store the data of registration number mapped to its slot number
+         age_slot_dict: this dict is used to store the data of all the slotnumbers for a particular age
+         slot_heap:  This is Min Heap used to store the slots which become empty after vehicle exits the parking lot.
+                    Min heap is used to always get the minimum slot for the next car to park
     """
 
     def __init__(self, slots=None, total_slots=None, avail_slot=None, reg_slot_dict=None,
@@ -29,8 +33,11 @@ class ParkingLot:
         heapify(self.slot_heap)
 
     def create_parkinglot(self, command_toks):
-        # validating command and executing it
-        # Command-  "Create_parking_lot 6"
+        """
+        Command-  "Create_parking_lot 6"
+        :param command_toks: Array with the command and value example- ["Create_parking_lot", "6"]
+        :return: None
+        """
         if not len(command_toks) == 2 and not re.match(r'\d', command_toks[1]):
             print('Invalid "Create_parking_lot" Command Format')
         else:
@@ -48,6 +55,14 @@ class ParkingLot:
                 print('Invalid "Create_parking_lot" Command Format')
 
     def get_emptyslot(self):
+        """
+        :param: Takes no Input
+        :return: Integer value: Best least empty Slot in which the car can be parked
+                None if there are no empty slots available
+        avail_slot : to maintain the available parking slot number when we are first filling the parking lot
+             if any slot is available in heap will return slotnum from slot_heap(comes only anyone leaves the parking)
+             Min heap is used to always get the minimum slot for the next car to park
+        """
         if not self.slot_heap and self.avail_slot < self.total_slots:
             slot = self.avail_slot
             self.avail_slot += 1
@@ -61,21 +76,23 @@ class ParkingLot:
 
 class ParkingProcessor:
     """
-    ParkingProcessor is factory which process the commands on the parkinglot
-
+    ParkingProcessor is factory which process the commands on the Parkinglot
     """
 
     def __init__(self, parkinglot_obj):
         self.parkinglot_obj = parkinglot_obj
 
     def park_vehicle(self, command_toks):
-        # validating command and executing it
-        # Command-  "Park KA-01-HH-1234 driver_age 21"
+        """
+        Command-  "Park KA-01-HH-1234 driver_age 21"
+        :param command_toks: Array with the command and value example- ["Park", "KA-01-HH-1234", "driver_age", "21"]
+        :return: None
+        """
         reg_num = re.match(r'[A-Z]{2}-\d{2}-[A-Z]{2}-\d{4}', command_toks[1])
         reg_num = reg_num.group() if reg_num else None
         age = re.match(r'\d+', command_toks[3])
         age = age.group() if age else None
-        if len(command_toks) == 4 and reg_num and command_toks[2] == "driver_age" and age:
+        if len(command_toks) == 4 and not reg_num is None and command_toks[2] == "driver_age" and not age is None:
             reg_num = reg_num
             age = int(age)
             slot = self.parkinglot_obj.get_emptyslot()
@@ -93,8 +110,11 @@ class ParkingProcessor:
             print('Invalid "Park" vehicle Command Format')
 
     def exit_vehicle(self, command_toks):
-        # validating command and executing it
-        """ Command: Leave 2"""
+        """
+        Command-  "Leave 2"
+        :param command_toks: Array with the command and value example- ["Leave","2"]
+        :return: None
+        """
         slot = re.match(r'\d+', command_toks[1])
         slot = slot.group() if slot else None
         if len(command_toks) == 2 and slot:
@@ -111,38 +131,58 @@ class ParkingProcessor:
                 print(
                     f"Slot number {slot} vacated, the car with vehicle registration number {vehicle_data['reg_num']} left the space, the driver of the car was of age {vehicle_data['age']}")
             else:
-                print(f"Parking space {slot} is already Empty")
+                print(f"Slot Already vacant")
         else:
             print('Invalid "Leave" Command Format')
 
     def get_slots_by_age(self, command_toks):
-        """ Command: Slot_numbers_for_driver_of_age 21 """
+        """
+        Command: "Slot_numbers_for_driver_of_age 21
+        :param command_toks: Array with the command and value example- ["Slot_numbers_for_driver_of_age", "21"]
+        :return: String: Returns the comma separated string with all the slots for the given age
+                None if no slots are present for the given age
+        """
         age = re.match(r'\d+', command_toks[1])
         age = age.group() if age else None
         if len(command_toks) == 2 and age:
             result = self.parkinglot_obj.age_slot_dict[int(age)]
-            if result:
+            if not result is None:
                 print(",".join(str(i) for i in result))
+                return ",".join(str(i) for i in result)
             else:
                 print("No parked car matches the query")
         else:
             print('Invalid "Slot_numbers_for_driver_of_age" Command Format')
+        return None
 
     def get_slot_by_num(self, command_toks):
-        # validating command and executing it
-        """ Command: Slot_number_for_car_with_number PB-01-HH-1234 """
+        """
+        Command: "Slot_number_for_car_with_number PB-01-HH-1234"
+        :param command_toks: Array with the command and value example- ["Slot_number_for_car_with_number", "PB-01-HH-1234"]
+        :return: Integer: Returns the Slot num for the given registration number of vehicle
+                None if no slots are present for the given registration number of vehicle
+        """
+
         reg_num = re.match(r'[A-Z]{2}-\d{2}-[A-Z]{2}-\d{4}', command_toks[1])
         reg_num = reg_num.group() if reg_num else None
         if len(command_toks) == 2 and reg_num:
             result = self.parkinglot_obj.reg_slot_dict.get(reg_num, None)
-            if result:
+            if not result is None:
                 print(result + 1)  # adding +1  we are storing indexes in reg_slot_dict
+                return result + 1
             else:
                 print("No parked car matches the query")
         else:
             print('Invalid "Slot_number_for_car_with_number"  Command Format')
 
     def get_vehiclenums_by_age(self, command_toks):
+        """
+
+        Command: "Vehicle_registration_number_for_driver_of_age 18"
+        :param command_toks: Array with the command and value example- ["Vehicle_registration_number_for_driver_of_age", "18"]
+        :return: String: Returns the comma separated string with all the registration numbers of the vehicles for the given age
+                None if no vehicles are present for the given age
+        """
         # validating command and executing it
         """ Command: Vehicle_registration_number_for_driver_of_age 18 """
         age = re.match(r'\d+', command_toks[1]).group()
@@ -151,6 +191,7 @@ class ParkingProcessor:
             if slots:
                 reg_nums = [self.parkinglot_obj.slots[slot - 1].get('reg_num') for slot in slots]
                 print(",".join(reg_nums))
+                return ",".join(reg_nums)
             else:
                 print("No parked car matches the query")
         else:
@@ -168,6 +209,10 @@ class CommandProcessor:
         self.process_parking_obj = process_parking_obj
 
     def execute_commands(self):
+        """
+        Will execute all the commands which are present in the input file
+        :return: None
+        """
         if not self.file_obj and self.file_obj.file:
             print("Input File not found to process")
             return
@@ -182,6 +227,12 @@ class CommandProcessor:
             self.process_command(cmd_tokens)
 
     def process_command(self, command_toks):
+        """
+        Router for the commands in the input file. This function process the command and
+        calls the relevant function to execute the command.
+        :param command_toks: array - each Command from the Input file
+        :return: None
+        """
         if not command_toks or not len(command_toks) > 0:
             print("Cannot process the command. Invalid Command Format")
             return
@@ -201,25 +252,12 @@ class CommandProcessor:
             print("Command Not matched with valid commands set")
 
 
-class FileUtility:
-    """
-    Utility class to load the input file
-    """
-
-    def __init__(self):
-        self.file = None
-
-    def load_file(self, filepath):
-        try:
-            self.file = open(filepath, 'r')
-        except IOError:
-            self.file = None
-            print("Input File not found in given path")
-
-
 if __name__ == '__main__':
-    # filename = input("Enter the input file path:\n")
-    filename = "test_files/inp2.txt"
+    filename = None
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    if not filename:
+        filename = input("Enter the input file path:\n")
     plot = ParkingLot()
     file_obj = FileUtility()
     file_obj.load_file(filename)

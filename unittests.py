@@ -124,7 +124,7 @@ class CommandProcessorTest(unittest.TestCase):
 
 class ParkingProcessorTest(unittest.TestCase):
     """
-        Test class: CommandProcessorTest
+        Test class: ParkingProcessorTest
             Contains unittest cases to test functions of ParkingProcessor class
     """
 
@@ -157,7 +157,6 @@ class ParkingProcessorTest(unittest.TestCase):
         self.assertEqual(self.plot.avail_slot, 3)
         self.assertEqual(self.plot.slot_heap[0], 1)
 
-
     def test_exit_vehicle_invalid(self):
         """
              Testing exit_vehicle() function with invalid inputs - by removing car from empty slot
@@ -167,6 +166,45 @@ class ParkingProcessorTest(unittest.TestCase):
         self.assertEqual(self.plot.slots[1], None)
         self.assertEqual(self.plot.avail_slot, 3)
         self.assertEqual(self.plot.slot_heap[0], 1)
+
+    def test_get_slots_by_age(self):
+        """
+             Testing get_slots_by_age() function with different inputs -
+              checking for different ages which are present and not present
+        """
+        slot_nums = self.park_processor_obj.get_slots_by_age("Slot_numbers_for_driver_of_age 21".split())
+        self.assertEqual(slot_nums, '1,2')
+        slot_nums = self.park_processor_obj.get_slots_by_age("Slot_numbers_for_driver_of_age 40".split())
+        self.assertEqual(slot_nums, '3')
+        slot_nums = self.park_processor_obj.get_slots_by_age("Slot_numbers_for_driver_of_age 65".split())
+        self.assertEqual(slot_nums, '')
+
+    def test_get_slots_by_num(self):
+        """
+             Testing get_slots_by_num() function with valid inputs -
+             checking with different inputs which are present and missing in the data
+        """
+        slot_nums = self.park_processor_obj.get_slot_by_num("Slot_number_for_car_with_number KA-01-HH-1234".split())
+        self.assertEqual(slot_nums, 1)
+        slot_nums = self.park_processor_obj.get_slot_by_num("Slot_number_for_car_with_number PB-01-HH-1234".split())
+        self.assertEqual(slot_nums, 2)
+        slot_nums = self.park_processor_obj.get_slot_by_num("Slot_number_for_car_with_number AP-01-BB-1454".split())
+        self.assertEqual(slot_nums, None)
+
+    def test_get_vehiclenums_by_age(self):
+        """
+             Testing get_vehiclenums_by_age function with valid inputs -
+             checking with different inputs which are present and missing in the data
+        """
+        veh_nums = self.park_processor_obj.get_vehiclenums_by_age(
+            "Vehicle_registration_number_for_driver_of_age 18".split())
+        self.assertEqual(veh_nums, None)
+        veh_nums = self.park_processor_obj.get_vehiclenums_by_age(
+            "Vehicle_registration_number_for_driver_of_age 40".split())
+        self.assertEqual(veh_nums, "PB-01-TG-2341")
+        veh_nums = self.park_processor_obj.get_vehiclenums_by_age(
+            "Vehicle_registration_number_for_driver_of_age 21".split())
+        self.assertEqual(veh_nums, "KA-01-HH-1234,PB-01-HH-1234")
 
 
 class DataDump:

@@ -15,19 +15,36 @@ Input filepath is given as user input when program is run.
 - Installations required to run the project can be installed by running the shell script provided.
 - open terminal, navigate to the project directory.
 Commands:-
-sh ubuntu_install.sh
+_sh ubuntu_install.sh_
 
 ###For Mac Users:
 - Installations required to run the project can be installed by running the shell script provided.
 - open terminal, navigate to the project directory.
 Commands:-
-sh mac_install.sh
+_sh mac_install.sh_
 
 
 ###Running the project: (Both Mac and Ubuntu Users)
 - open terminal, navigate to the project directory.
 Commands:-
-sh run.sh
+_sh run.sh_
+  
+- We can also pass the file name as command line arguments
+for example:
+
+Command:
+
+  _sh run.sh test_files/inp.txt_
+
+- We can also run the program directly using python 
+
+Command:
+  _python3 virtual_parking.py_
+  
+- can also pass filename as command line argument
+  
+Command:
+  _python3 virtual_parking.py_
 
 ###Running the Unittests cases: (Both Mac and Ubuntu Users)
 - open terminal, navigate to the project directory.
@@ -39,3 +56,6 @@ sh run_unittest.sh
 - Assuming all the commands in the given input file are in correct format. Min validations on commands are done.
 - Indian registration number format is accepted.
 https://en.wikipedia.org/wiki/Vehicle_registration_plate#India
+- You can input the file name as command line arguments given as per instructions or type it as user input.
+- Basic unittests are written to check the code correctness, we can run them using the instructions given above. 
+- Sample input files are present in the "test_files" Directory. 

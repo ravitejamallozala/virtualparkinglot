@@ -1,1 +1,1 @@
-python3 virtual_parking.py
+python3 virtual_parking.py $1
