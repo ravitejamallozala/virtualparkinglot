@@ -1,0 +1,4 @@
+Create_parking_lot 2
+Park KA-01-HH-1234 driver_age 21
+Park AB-01-HH-7865 driver_age 12
+Leave 1

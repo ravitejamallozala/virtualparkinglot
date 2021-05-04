@@ -4,6 +4,19 @@ from collections import defaultdict
 
 
 class ParkingLot:
+    """
+       ParkingLot is a virtual parking lot with n number of parking slots.
+       provides utility funtions :
+         create_parkinglot() - to create a parking lot
+         get_emptyslot() - will return the next available empty slot
+        self.slots = slots if slots else list()
+        self.total_slots = total_slots
+        self.avail_slot = avail_slot
+        self.reg_slot_dict = reg_slot_dict if reg_slot_dict else dict()
+        self.age_slot_dict = age_slot_dict if age_slot_dict else defaultdict(list)
+        self.slot_heap = slot_heap if slot_heap else list()
+
+    """
     def __init__(self, slots=None, total_slots=None, avail_slot=None, reg_slot_dict=None,
                  age_slot_dict=None, slot_heap=None):
         self.slots = slots if slots else list()
@@ -20,12 +33,18 @@ class ParkingLot:
         if not len(command_toks) == 2 and not re.match(r'\d', command_toks[1]):
             print('Invalid "Create_parking_lot" Command Format')
         else:
-            num_of_slots = int(command_toks[1])
-            self.total_slots = int(command_toks[1])
-            self.slots = [None for _ in range(num_of_slots)]
-            print(f"Created parking of {num_of_slots} slots")
-            if num_of_slots > 0:
-                self.avail_slot = 0
+            try:
+                num_of_slots = int(command_toks[1])
+                if not num_of_slots > 0:
+                    print("Number of Parking slots should be a Positive integer")
+                    return
+                self.total_slots = int(command_toks[1])
+                self.slots = [None for _ in range(num_of_slots)]
+                print(f"Created parking of {num_of_slots} slots")
+                if num_of_slots > 0:
+                    self.avail_slot = 0
+            except ValueError:
+                print('Invalid "Create_parking_lot" Command Format')
 
     def get_emptyslot(self):
         if not self.slot_heap and self.avail_slot < self.total_slots:
@@ -40,6 +59,10 @@ class ParkingLot:
 
 
 class ParkingProcessor:
+    """
+    ParkingProcessor is factory which process the commands on the parkinglot
+
+    """
     def __init__(self, parkinglot_obj):
         self.parkinglot_obj = parkinglot_obj
 
@@ -128,7 +151,10 @@ class ParkingProcessor:
 
 
 class CommandProcessor:
+    """
+    CommandProcessor process all the commands in the file and routes each command based on its type.
 
+    """
     def __init__(self, file_obj, process_parking_obj):
         self.file_obj = file_obj
         self.process_parking_obj = process_parking_obj
@@ -138,7 +164,7 @@ class CommandProcessor:
             print("Input File not found to process")
             return
         line_num = 0
-        for line in file_obj.file:
+        for line in self.file_obj.file:
             line_num += 1
             command = line.strip(" \n ")
             cmd_tokens = command.split()
@@ -148,6 +174,9 @@ class CommandProcessor:
             self.process_command(cmd_tokens)
 
     def process_command(self, command_toks):
+        if not command_toks or not len(command_toks) > 0:
+            print("Cannot process the command. Invalid Command Format")
+            return
         if command_toks[0] == 'Create_parking_lot':
             self.process_parking_obj.parkinglot_obj.create_parkinglot(command_toks)
         elif command_toks[0] == 'Park':
@@ -160,9 +189,14 @@ class CommandProcessor:
             self.process_parking_obj.get_slot_by_num(command_toks)
         elif command_toks[0] == 'Vehicle_registration_number_for_driver_of_age':
             self.process_parking_obj.get_vehiclenums_by_age(command_toks)
+        else:
+            print("Command Not matched with valid commands set")
 
 
 class FileUtility:
+    """
+    Utility class to load the input file
+    """
     def __init__(self):
         self.file = None
 
@@ -175,11 +209,12 @@ class FileUtility:
 
 
 if __name__ == '__main__':
-    # filename = input("Enter the input file path:\n")
-    filename = "inp.txt"
+    filename = input("Enter the input file path:\n")
+    # filename = "test_files/inp.txt"
     plot = ParkingLot()
     file_obj = FileUtility()
     file_obj.load_file(filename)
     process_prk_obj = ParkingProcessor(plot)
     command_obj = CommandProcessor(file_obj, process_prk_obj)
     command_obj.execute_commands()
+
