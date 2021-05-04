@@ -17,7 +17,7 @@ class ParkingLot:
          total_slots: to maintain the maximum number of slots available in the parking lot
          avail_slot: to maintain the available parking slot number when we are first filling the parking lot
          reg_slot_dict: this dict is used to store the data of registration number mapped to its slot number
-         age_slot_dict: this dict is used to store the data of all the slotnumbers for a particular age
+         age_slot_dict: this dict is used to store the data of all the slot numbers for a particular age
          slot_heap:  This is Min Heap used to store the slots which become empty after vehicle exits the parking lot.
                     Min heap is used to always get the minimum slot for the next car to park
     """
