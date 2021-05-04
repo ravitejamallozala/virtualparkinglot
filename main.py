@@ -35,6 +35,7 @@ class Parking:
             return heappop(self.slot_heap)
         else:
             print("Sorry! No Parking spaces available")
+            return None
 
     def park_vehicle(self, command_toks):
         # validating command and executing it
@@ -45,6 +46,8 @@ class Parking:
             reg_num = reg_num
             age = int(age)
             slot = self.get_emptyslot()
+            if slot is None:
+                return
             # print("available slot: ", slot)
             """Parking the Car in that slot """
             self.slots[slot] = {
